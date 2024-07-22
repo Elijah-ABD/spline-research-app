@@ -8,10 +8,20 @@
         Name="window"
         Title="WPF" Height="720" Width="1280"  MouseMove="MouseMoveHandler" MouseDown="MouseClickHandler" KeyDown="OnKeyDownHandler">
     <Grid>
-        <Canvas x:Name="canvas" Background="White">
-            <TextBox Width="1280" Height="30" Name="textBox2" Margin="0,660,0,0" TextWrapping="Wrap"/>
+        <Canvas x:Name="canvas" Margin="0,0,0,-40">
+
+            <TextBox Width="1280" Height="30" Name="textBox2" Margin="0,1660,0,0" TextWrapping="Wrap"/>
             <TextBox TextWrapping="Wrap" Name="textBox1" Width="Auto"/>
         </Canvas>
     </Grid>
 
 </Window>
+
+<!-- 
+                <Canvas.Background>
+                <ImageBrush
+                    ImageSource="C:\Users\Elijah.Afriyie-Oloku\source\repos\WpfApp1\WpfApp1\colerne-med-window.png"
+                    Stretch="Fill"/>
+            </Canvas.Background>
+-->
+ 

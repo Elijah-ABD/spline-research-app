@@ -28,7 +28,8 @@ namespace WpfApp1
 
         private void MouseMoveHandler(object sender, MouseEventArgs e)
         {
-            textBox1.Text = $"{e.GetPosition(this)}";
+            var point = e.GetPosition(this);
+            textBox1.Text = $"x: {Math.Round(point.X, 2)}, y: {Math.Round(point.Y, 2)}";
         }
 
         private void MouseClickHandler(object sender, MouseEventArgs e)
@@ -54,7 +55,7 @@ namespace WpfApp1
         {
             if ((e.Key == Key.Return) || (e.Key == Key.Space))
             {
-                DrawSplin();
+                DrawSpline();
             }
 
             if (e.Key == Key.R) 
@@ -69,40 +70,9 @@ namespace WpfApp1
             }
         }
 
+
+
         private void DrawSpline()
-        {
-            List<Line> lines = new List<Line>();
-            if (coords.Count < 4)
-            {
-                return;
-            }
-            else
-            {
-                for (int i = 0; i < coords.Count - 1; i++)
-                {
-                    Line line = new Line
-                    {
-                        X1 = coords[i].Item1,
-                        Y1 = coords[i].Item2,
-                        X2 = coords[i+1].Item1,
-                        Y2 = coords[i+1].Item2,
-                        Stroke = Brushes.Black,
-                        StrokeThickness = 4,
-                    };
-                    lines.Add(line);
-                }
-                foreach (Line line in lines)
-                {
-
-                    canvas.Children.Add(line);
-                }
-            }
-
-         
-
-        }
-
-        private void DrawSplin()
         {
             for (int i = 0; i < coords.Count - 3; i++)
             {
@@ -116,7 +86,7 @@ namespace WpfApp1
             }
 
         }
-        private void  GetSplineCoord(double t, List<(double, double)> points )
+        private void  GetSplineCoord(double t, List<(double, double)> points)
         {
             int p0, p1, p2, p3;
             
@@ -142,7 +112,7 @@ namespace WpfApp1
             {
                 Height = 10,
                 Width = 10,
-                Fill = Brushes.Black,
+                Fill = Brushes.Red,
             };
             Canvas.SetLeft(marker, tX - marker.Width / 2);
             Canvas.SetTop(marker, tY - marker.Height / 2);
@@ -151,3 +121,10 @@ namespace WpfApp1
 
     }
 }
+/*
+ *             <Canvas.Background>
+                <ImageBrush
+                    ImageSource="\WpfApp1\colerne-window.png"
+                    Stretch="Uniform"/>
+            </Canvas.Background>
+*/
