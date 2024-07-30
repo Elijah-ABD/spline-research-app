@@ -8,10 +8,14 @@
         Name="window"
         Title="WPF" Height="720" Width="1280"  MouseMove="MouseMoveHandler" MouseDown="MouseClickHandler" KeyDown="OnKeyDownHandler">
     <Grid>
-        <Canvas x:Name="canvas" Margin="0,0,0,-40">
-
-            <TextBox Width="1280" Height="30" Name="textBox2" Margin="0,1660,0,0" TextWrapping="Wrap"/>
+        <Canvas x:Name="canvas">
             <TextBox TextWrapping="Wrap" Name="textBox1" Width="Auto"/>
+            <StackPanel Name="sp1" Height="200" Width="300" HorizontalAlignment="Right" VerticalAlignment="Bottom" Canvas.Left="980" Canvas.Top="185">
+                <TextBox  KeyDown="TextBox_KeyDown">300,500</TextBox>
+                <TextBox  KeyDown="TextBox_KeyDown">500, 700</TextBox>
+                <TextBox  KeyDown="TextBox_KeyDown">550,400</TextBox>
+                <TextBox  KeyDown="TextBox_KeyDown">600,600</TextBox>
+            </StackPanel>
         </Canvas>
     </Grid>
 
