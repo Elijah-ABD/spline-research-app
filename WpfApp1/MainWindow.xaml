@@ -6,15 +6,19 @@
         xmlns:local="clr-namespace:WpfApp1"
         mc:Ignorable="d"
         Name="window"
-        Title="WPF" Height="720" Width="1280"  MouseMove="MouseMoveHandler" MouseDown="MouseClickHandler" KeyDown="OnKeyDownHandler">
+        Title="WPF" Height="396" Width="708"  MouseMove="MouseMoveHandler" MouseDown="MouseClickHandler" KeyDown="OnKeyDownHandler">
     <Grid>
         <Canvas x:Name="canvas">
             <TextBox TextWrapping="Wrap" Name="textBox1" Width="Auto"/>
-            <StackPanel Name="sp1" Height="200" Width="300" HorizontalAlignment="Right" VerticalAlignment="Bottom" Canvas.Left="980" Canvas.Top="185">
-                <TextBox  KeyDown="TextBox_KeyDown">300,500</TextBox>
-                <TextBox  KeyDown="TextBox_KeyDown">500, 700</TextBox>
-                <TextBox  KeyDown="TextBox_KeyDown">550,400</TextBox>
-                <TextBox  KeyDown="TextBox_KeyDown">600,600</TextBox>
+            <Button Click="Button_Click" HorizontalAlignment="Left" Canvas.Top="18" VerticalAlignment="Top" Height="21" Width="37">
+                Fill            
+            </Button>
+            <StackPanel Name="sp1" Height="Auto" Width="300" VerticalAlignment="Top" Canvas.Left="9800" Canvas.Top="208">
+                <Label Content="Control Points: 4"/>
+                <TextBox  KeyDown="TextBox_KeyDown">450,300</TextBox>
+                <TextBox  KeyDown="TextBox_KeyDown">500, 300</TextBox>
+                <TextBox  KeyDown="TextBox_KeyDown">700,300</TextBox>
+                <TextBox  KeyDown="TextBox_KeyDown">750,300</TextBox>
             </StackPanel>
         </Canvas>
     </Grid>
