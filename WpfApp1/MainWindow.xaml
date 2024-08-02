@@ -6,21 +6,17 @@
         xmlns:local="clr-namespace:WpfApp1"
         mc:Ignorable="d"
         Name="window"
-        Title="WPF" Height="396" Width="708"  MouseMove="MouseMoveHandler" MouseDown="MouseClickHandler" KeyDown="OnKeyDownHandler">
+        Title="WPF" Height="396" Width="708" MouseDown="MouseClickHandler"   Background="#0E1A25" >
     <Grid>
-        <Canvas x:Name="canvas">
-            <TextBox TextWrapping="Wrap" Name="textBox1" Width="Auto"/>
-            <Button Click="Button_Click" HorizontalAlignment="Left" Canvas.Top="18" VerticalAlignment="Top" Height="21" Width="37">
-                Fill            
-            </Button>
-            <StackPanel Name="sp1" Height="Auto" Width="300" VerticalAlignment="Top" Canvas.Left="9800" Canvas.Top="208">
-                <Label Content="Control Points: 4"/>
-                <TextBox  KeyDown="TextBox_KeyDown">450,300</TextBox>
-                <TextBox  KeyDown="TextBox_KeyDown">500, 300</TextBox>
-                <TextBox  KeyDown="TextBox_KeyDown">700,300</TextBox>
-                <TextBox  KeyDown="TextBox_KeyDown">750,300</TextBox>
-            </StackPanel>
-        </Canvas>
+    <Grid.RowDefinitions>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition/>
+    </Grid.RowDefinitions>
+            <StackPanel Orientation="Horizontal" Grid.Row="0">
+            <Button Name="LoopButton" Click="Button_Click" Width="50">Fill</Button>
+            <Button Name="ClearButton" Click="Button_Click" Width="50">Clear</Button>
+        </StackPanel>
+        <Canvas x:Name="canvas"></Canvas>
     </Grid>
 
 </Window>

@@ -1,28 +1,19 @@
-﻿using Accessibility;
-using System.Drawing;
-using System.Security.Cryptography.Pkcs;
-using System.Text;
-using System.Transactions;
+﻿using System.Security.Cryptography.X509Certificates;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Animation;
-using System.Windows.Media.Imaging;
-using System.Windows.Media.Media3D;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 using MathNet.Numerics;
-using System.Security.Cryptography.Xml;
-using System.Security.Policy;
-
 
 namespace WpfApp1
 {
     struct Coord
     {
+        public Coord(double x, double y){
+            this.x = x;
+            this.y = y;
+        }
         public double x, y;
     }
     public partial class MainWindow : System.Windows.Window
@@ -36,60 +27,44 @@ namespace WpfApp1
 
         // Event Handlers
 
-        private void MouseMoveHandler(object sender, MouseEventArgs e)
-        {
-            var point = e.GetPosition(this);
-            textBox1.Text = $"x: {Math.Round(point.X, 2)}, y: {Math.Round(point.Y, 2)}";
-        }
-
         private void MouseClickHandler(object sender, MouseEventArgs e)
         {
             var point = e.GetPosition(this);
-            Coord p;
-            coords.Add(new Coord { x = point.X, y = point.Y });
+            var newPoint = new Coord(point.X, point.Y);
+            coords.Add(newPoint);
 
-            Ellipse marker = new Ellipse
-            {
-                Height = 10,
-                Width = 10,
-                Fill = Brushes.Black,
-            };
-            Canvas.SetLeft(marker, point.X - marker.Width / 2);
-            Canvas.SetTop(marker, point.Y - marker.Height / 2);
-            canvas.Children.Add(marker);
+            DrawPoints(new List<Coord>{newPoint}, 10, Brushes.Black);
 
             if (coords.Count > 1)
             {
                 Mirror();
                 clearCanvas();
-                SplineDrawing(Brushes.Red, 0.5f);
+                SplineDrawing(0.5f);
+
             }
-
-
         }
 
-
-        private void OnKeyDownHandler(object sender, KeyEventArgs e)
+        private void Button_Click(object sender, RoutedEventArgs e)
         {
-            if ((e.Key == Key.Return) || (e.Key == Key.Space))
+            var button = (Button)sender;
+            switch (button.Name)
             {
-                if (coords.Count > 3)
-                {
-                    DrawPoints(CRPoint(coords[1], coords[0], coords[^1], coords[^2], 0.5f), 2, Brushes.Red);
-                }
-               
+                case "LoopButton":
+                    if (coords.Count > 3)
+                        {
+                            DrawPoints(new List<Coord>{new(coords[^1].x, coords[^1].y), new(coords[0].x, coords[0].y)}, 2, Brushes.LightGray, true);
+                            DrawPoints(CRPoint(coords[1], coords[0], coords[^1], coords[^2], 0.5f), 2, Brushes.Red);
+                            
+                        }
+                    break;
+                
+                case "ClearButton":
+                    this.canvas.Children.Clear();
+                    coords.Clear(); 
+                    break;
             }
 
-            if (e.Key == Key.R)
-            {
-                clearCanvas();
-                coords.Clear();
-            }
 
-            if (e.Key == Key.Escape)
-            {
-                Close();
-            }
         }
 
         // Helper Functions
@@ -101,7 +76,7 @@ namespace WpfApp1
                 var dx = p2.x - p1.x;
                 var dy = p2.y - p1.y;
 
-                var first = new Coord { x = p1.x-dx, y = p1.y-dy };
+                var first = new Coord(p1.x-dx, p1.y-dy);
                 coords.Insert(0, first);
 
                 p1 = coords[^2];
@@ -110,7 +85,7 @@ namespace WpfApp1
                 dx = p2.x - p1.x;
                 dy = p2.y - p1.y;
                 
-                var last = new Coord { x = p2.x + dx, y = p2.y + dy };
+                var last = new Coord(p2.x + dx, p2.y + dy);
                 coords.Add(last);
 
         }
@@ -127,54 +102,27 @@ namespace WpfApp1
         private void clearCanvas()
         {
             this.canvas.Children.Clear();
-            
         }
 
-        private void TextBox_KeyDown(object sender, KeyEventArgs e)
+        // TODO: ADD FILL FUNCTIONALITY
+        private void SplineDrawing(float alpha=0)
         {
-            if (e.Key == Key.Enter)
-            {
-                foreach (UIElement element in sp1.Children)
-                {
-                    if (element is TextBox tb)
-                    {
-                        coords.Add(new Coord { x = getDouble(tb.Text).Item1, y = getDouble(tb.Text).Item2 });
-                    }
-                }
-                clearCanvas();
-                SplineDrawing(Brushes.Blue);
-                coords.Clear();
-            }
-        }
-
-        // Spline draw functionality
-        private void SplineDrawing(Brush colour, float alpha=0, bool fill=false)
-        {
-            var centripetalPoints = CRChain(coords, alpha, fill);
+            var splinePoints = CRChain(coords, alpha);
             coords.RemoveAt(0);
             coords.RemoveAt(coords.Count - 1);
+            DrawPoints(coords, 2, Brushes.LightGray, true);
             DrawPoints(coords, 10, Brushes.Black);
-            DrawPoints(centripetalPoints, 2, colour);
+            DrawPoints(splinePoints, 2, Brushes.Red);
             
         }
 
-        private List<Coord> CRChain(List<Coord> points, float alpha, bool fill=false)
+        private List<Coord> CRChain(List<Coord> points, float alpha)
         {
             var chainedCoords = new List<Coord>();
-            if (fill)
-            {
-                for (int i = 0; i < points.Count; i++)
-                {
-                    chainedCoords.AddRange(CRPoint(points[i], points[(i + 1) % points.Count], points[(i + 2) % points.Count], points[(i + 3) % points.Count], alpha));
-                }
-            }
-            else
-            {
                 for (int i = 0; i < points.Count - 3; i++)
                 {
                     chainedCoords.AddRange(CRPoint(points[i], points[i + 1], points[i + 2], points[i + 3], alpha));
                 }
-            }
             return chainedCoords;
         }
 
@@ -187,6 +135,7 @@ namespace WpfApp1
             return ti + Math.Pow(l, alpha);
         }
 
+        // Adapted wikipedia method https://en.wikipedia.org/wiki/Centripetal_Catmull%E2%80%93Rom_spline#Code_example_in_Python
         private List<Coord> CRPoint(Coord p0, Coord p1, Coord p2, Coord p3, float alpha)
         {
             double t0 = 0;
@@ -219,29 +168,37 @@ namespace WpfApp1
             return points;
         }
 
-        private void DrawPoints(List<Coord> points,int size, Brush colour) 
+        private void DrawPoints(List<Coord> points,int size, Brush colour, bool tracing=false) 
         {
-            foreach (var point in points)
-            {
-                 Ellipse marker = new Ellipse
+            if (!tracing){
+                foreach (var point in points)
                 {
-                    Height = size,
-                    Width = size,
-                    Fill = colour,
-                };
-                Canvas.SetLeft(marker, point.x - marker.Width / 2);
-                Canvas.SetTop(marker, point.y - marker.Height / 2);
-                canvas.Children.Add(marker);
+                    Ellipse marker = new Ellipse
+                    {
+                        Height = size,
+                        Width = size,
+                        Fill = colour,
+                    };
+                    Canvas.SetLeft(marker, point.x - marker.Width / 2);
+                    Canvas.SetTop(marker, point.y - marker.Height / 2);
+                    canvas.Children.Add(marker);
+                }
             }
-
-        }
-
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            if (coords.Count > 3)
+            else
             {
-                DrawPoints(CRPoint(coords[1], coords[0], coords[^1], coords[^2], 0.5f), 2, Brushes.Red);
+                for (int i = 0; i < points.Count - 1; i++)
+                {
+                    Line line = new Line
+                    {
+                        X1 = points[i].x, Y1 = points[i].y,
+                        X2 = points[i+1].x, Y2 = points[i+1].y,
+                        Stroke = colour,
+                        StrokeThickness=size
+                    };
+                    canvas.Children.Add(line);
+                }
             }
+
         }
     }
 }
