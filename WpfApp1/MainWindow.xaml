@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:WpfApp1"
         mc:Ignorable="d"
         Name="window"
-        Title="WPF" Height="396" Width="708" MouseDown="MouseClickHandler"   Background="#0E1A25" >
+        Title="WPF" Height="396" Width="708" MouseDown="MouseClickHandler" Background="#0E1A25">
     <Grid>
     <Grid.RowDefinitions>
         <RowDefinition Height="Auto"/>
@@ -16,7 +16,9 @@
             <Button Name="LoopButton" Click="Button_Click" Width="50">Fill</Button>
             <Button Name="ClearButton" Click="Button_Click" Width="50">Clear</Button>
         </StackPanel>
-        <Canvas x:Name="canvas"></Canvas>
+        <Canvas x:Name="canvas">
+
+        </Canvas>
     </Grid>
 
 </Window>
