@@ -2,6 +2,7 @@
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Navigation;
 using System.Windows.Shapes;
 using MathNet.Numerics;
 
@@ -11,6 +12,8 @@ namespace WpfApp1
     {
         private List<Point> coords = new List<Point>();
         private CatmullRom cr = new CatmullRom();
+        private float alpha = 0;
+        
         public MainWindow()
         {
             InitializeComponent();
@@ -26,21 +29,29 @@ namespace WpfApp1
                   
             if (coords.Count > 1)
             {
-                MirrorControlPoints();
-                clearCanvas();
-                SplineDrawing(Brushes.Yellow, 0.5f);
+                SplineDrawing(Brushes.Orange);
             }
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-           clearCanvas();
-           coords.Clear();
+            switch (((Button)sender).Content)
+            {
+                case "Clear":
+                    clearCanvas();
+                    coords.Clear();
+                    break;
+
+                case "Toggle Map":
+                    image.Visibility = image.Visibility == Visibility.Visible ? Visibility.Hidden : Visibility.Visible;
+                    break;
+            }
         }
 
         // Helper Functions
         private void MirrorControlPoints()
         {
+            // Mirroring the first and last control point
             var p1 = coords[0];
             var p2 = coords[1];
             coords.Insert(0, new Point(2*p1.X-p2.X, 2* p1.Y - p2.Y));
@@ -52,22 +63,24 @@ namespace WpfApp1
             coords.Add(last);
         }
 
-        private void clearCanvas()
-        {
-                canvas.Children.Clear();
-        }
+        private void clearCanvas() => canvas.Children.Clear();
 
-        private void SplineDrawing(Brush colour, float alpha = 0)
+        private void SplineDrawing(Brush colour)
         {
+            MirrorControlPoints();
             var splinePoints = cr.CRChain(coords, alpha);
+
+            // Remove mirrored control points
             coords.RemoveAt(0);
             coords.RemoveAt(coords.Count - 1);
+
+            clearCanvas();
             Draw(coords, 2, Brushes.LightGray);
             foreach (var point in coords)
             {
-                Draw(point, 2, colour);
+                Draw(point, 6, Brushes.LightGray);
             }
-            Draw(splinePoints, 2, colour);
+        Draw(splinePoints, 5, colour);
 
         }
 
@@ -113,11 +126,17 @@ namespace WpfApp1
             canvas.Children.Add(
                 new Path()
                 {
-                    Stroke = Brushes.LightGray,
+                    Stroke = colour,
                     StrokeThickness = 1,
-                    Data = new EllipseGeometry(new Point(point.X, point.Y), 6, 6)
+                    Data = new EllipseGeometry(new Point(point.X, point.Y), size, size)
                 }
-                );
-        } 
+            );
+        }
+
+        private void slValue_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            alpha = (float)e.NewValue;
+            if (coords.Count > 1){SplineDrawing(Brushes.Orange);}
+        }
     }
 }
