@@ -13,7 +13,6 @@
         <RowDefinition/>
     </Grid.RowDefinitions>
             <StackPanel Orientation="Horizontal" Grid.Row="0">
-            <Button Name="LoopButton" Click="Button_Click" Width="50">Fill</Button>
             <Button Name="ClearButton" Click="Button_Click" Width="50">Clear</Button>
         </StackPanel>
         <Canvas x:Name="canvas">
@@ -22,12 +21,3 @@
     </Grid>
 
 </Window>
-
-<!-- 
-                <Canvas.Background>
-                <ImageBrush
-                    ImageSource="C:\Users\Elijah.Afriyie-Oloku\source\repos\WpfApp1\WpfApp1\colerne-med-window.png"
-                    Stretch="Fill"/>
-            </Canvas.Background>
--->
- 
