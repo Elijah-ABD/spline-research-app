@@ -13,13 +13,13 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
 
-        <Image Name="image" Grid.Row="1" Source="image.png" Stretch="Fill" Visibility="{Binding isVisible}"/>
+        <Image Name="image" Grid.Row="1" Source="image.png" Stretch="Fill" Visibility="Hidden"/>
 
         <StackPanel Orientation="Horizontal" Grid.Row="0">
             <Button Name="MapButton" Click="Button_Click" Width="75" Content="Toggle Map"/>
             <Button Name="ClearButton" Click="Button_Click" Width="50" Content="Clear"/>
             <TextBox Name="AlphaText" Text="{Binding ElementName=slValue, Path=Value, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" Width="40" />
-            <Slider Width="100" Maximum="1" TickPlacement="BottomRight" TickFrequency="0.1" IsSnapToTickEnabled="True" Name="slValue" ValueChanged="slValue_ValueChanged" />
+            <Slider Width="100" Maximum="1" Value="0.5" TickPlacement="BottomRight" TickFrequency="0.1" IsSnapToTickEnabled="True" Name="slValue" ValueChanged="slValue_ValueChanged" />
         </StackPanel>
         <Canvas x:Name="canvas"/>
     </Grid>

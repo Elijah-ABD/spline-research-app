@@ -12,7 +12,7 @@ namespace WpfApp1
     {
         private List<Point> coords = new List<Point>();
         private CatmullRom cr = new CatmullRom();
-        private float alpha = 0;
+        private float alpha = 0.5f;
         
         public MainWindow()
         {
@@ -32,8 +32,32 @@ namespace WpfApp1
                 SplineDrawing(Brushes.Orange);
             }
         }
+public void DrawCone(Point p1, Point p2, double angleDegrees, Canvas canvas)
+    {
+        Vector direction = p2 - p1;
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        double angleRadians = angleDegrees * Math.PI / 180;
+
+        Vector leftEdge = RotateVector(direction, -angleRadians);
+        Vector rightEdge = RotateVector(direction, angleRadians);
+        Point leftPoint = p2 + leftEdge;
+        Point rightPoint = p2 + rightEdge;
+
+        Draw(p2, leftPoint);
+        Draw(p2, rightPoint);
+    }
+
+    private Vector RotateVector(Vector v, double angle)
+    {
+        double cosTheta = Math.Cos(angle);
+        double sinTheta = Math.Sin(angle);
+        return new Vector(
+            10*(v.X * cosTheta - v.Y * sinTheta),
+            10*(v.X * sinTheta + v.Y * cosTheta)
+        );
+    }
+
+    private void Button_Click(object sender, RoutedEventArgs e)
         {
             switch (((Button)sender).Content)
             {
@@ -69,6 +93,7 @@ namespace WpfApp1
         {
             MirrorControlPoints();
             var splinePoints = cr.CRChain(coords, alpha);
+            
 
             // Remove mirrored control points
             coords.RemoveAt(0);
@@ -81,6 +106,7 @@ namespace WpfApp1
                 Draw(point, 6, Brushes.LightGray);
             }
         Draw(splinePoints, 5, colour);
+        DrawCone(coords[coords.Count - 2], coords[coords.Count - 1], 45, canvas);
 
         }
 
@@ -131,6 +157,20 @@ namespace WpfApp1
                     Data = new EllipseGeometry(new Point(point.X, point.Y), size, size)
                 }
             );
+        }
+
+        private void Draw(Point start, Point end)
+        {
+            Line line = new Line
+            {
+                X1 = start.X,
+                Y1 = start.Y,
+                X2 = end.X,
+                Y2 = end.Y,
+                Stroke = Brushes.LightGray,
+                StrokeThickness = 2
+            };
+            canvas.Children.Add(line);
         }
 
         private void slValue_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
