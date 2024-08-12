@@ -15,6 +15,18 @@ namespace WpfApp1
             return chainedCoords;
         }
 
+
+
+        public Vector RotateVector(Vector v, double angle, double magnitude)
+        {
+            double cosTheta = Math.Cos(angle);
+            double sinTheta = Math.Sin(angle);
+            return new Vector(
+                magnitude * (v.X * cosTheta - v.Y * sinTheta),
+                magnitude * (v.X * sinTheta + v.Y * cosTheta)
+            );
+        }
+
         private double Distance(double ti, Point pi, Point pj, float alpha)
         {
             double xi = pi.X; double yi = pi.Y;
@@ -57,5 +69,6 @@ namespace WpfApp1
             }
             return points;
         }
+
     }
 }
