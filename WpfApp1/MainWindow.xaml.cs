@@ -1,21 +1,23 @@
-﻿using System.Windows;
+﻿using System.Diagnostics;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
-using MathNet.Numerics;
-
 namespace WpfApp1
 {
     public partial class MainWindow : System.Windows.Window
     {
         private List<Point> coords = new List<Point>();
         private CatmullRom cr = new CatmullRom();
-        private float alpha = 0.5f;
-        
+        private float alpha = 0;
+        private double magnitude = 0.5;
+        private Point first;
+
         public MainWindow()
         {
             InitializeComponent();
+
         }
 
         // Event Handlers
@@ -24,16 +26,57 @@ namespace WpfApp1
             var point = e.GetPosition(this);
             coords.Add(point);
             Draw(point, 6, Brushes.LightGray);
-                  
-            if (coords.Count > 1)
+            Connect();
+        }
+
+        private void Connect()
+        {
+            if (coords.Count == 2)
             {
+                var line = new Line
+                {
+                    X1 = coords[0].X,
+                    X2 = coords[1].X,
+                    Y1 = coords[0].Y,
+                    Y2 = coords[1].Y,
+                    StrokeThickness = 2,
+                    Stroke = Brushes.Bisque,
+                };
+
+                canvas.Children.Add(line);
+                var p = new Point(line.X1 + magnitude * (line.X2 - line.X1), line.Y1 + magnitude * (line.Y2 - line.Y1));
+
+                Draw(p, 6, Brushes.LightGreen);
+                first = coords[0];
+                coords.RemoveAt(0);
+
+                coords.Insert(0, p);
+            }
+            if (coords.Count >= 3)
+            {
+
+                coords.RemoveAt(0);
+                coords.Insert(0, first);
+
+
+                var line = new Line
+                {
+                    X1 = coords[0].X,
+                    X2 = coords[1].X,
+                    Y1 = coords[0].Y,
+                    Y2 = coords[1].Y,
+                    StrokeThickness = 2,
+                    Stroke = Brushes.Bisque,
+                };
+                clearCanvas();
+                canvas.Children.Add(line);
+                var p = new Point(line.X1 + magnitude * (line.X2 - line.X1), line.Y1 + magnitude * (line.Y2 - line.Y1));
+                Draw(first, 6, Brushes.LightGray);
+                Draw(p, 6, Brushes.LightGreen);
+                coords.RemoveAt(0);
+                coords.Insert(0, p);
                 SplineDrawing(Brushes.Orange);
             }
-        }
-        private void sliderChange(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-            alpha = (float)e.NewValue;
-            if (coords.Count > 1) { SplineDrawing(Brushes.Orange);}
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -52,34 +95,43 @@ namespace WpfApp1
         }
 
         // Helper Functions
-        private void Mirror(int index, Point p1, Point p2) => coords.Insert(index, new Point(2 * p1.X - p2.X, 2 * p1.Y - p2.Y));
+        private void MirrorControlPoints()
+        {
+            // Mirroring the first and last control point
+            var p1 = coords[0];
+            var p2 = coords[1];
+            //coords.Insert(0, new Point(2*p1.X-p2.X, 2* p1.Y - p2.Y));
+
+            p1 = coords[^2];
+            p2 = coords[^1];
+
+            var last = new Point(2 * p2.X - p1.X, 2 * p2.Y - p1.Y);
+            coords.Add(last);
+        }
+
         private void clearCanvas() => canvas.Children.Clear();
 
-        // Drawing Functions
         private void SplineDrawing(Brush colour)
         {
-            Mirror(0, coords[0], coords[1]);
-            Mirror(coords.Count, coords[^1], coords[^2]);
+            MirrorControlPoints();
             var splinePoints = cr.CRChain(coords, alpha);
-            
 
             // Remove mirrored control points
-            coords.RemoveAt(0);
+            //coords.RemoveAt(0);
             coords.RemoveAt(coords.Count - 1);
 
-            clearCanvas();
-            Draw(coords, 2, Brushes.LightGray);
+            //clearCanvas();
+            //Draw(coords, 2, Brushes.LightGray);
             foreach (var point in coords)
             {
                 Draw(point, 6, Brushes.LightGray);
             }
-        Draw(splinePoints, 5, colour);
-        DrawCone(coords[coords.Count - 2], coords[coords.Count - 1], 45);
+            Draw(splinePoints, 2, colour);
 
         }
 
         private void Draw(List<Point> points, int size, Brush colour)
-        
+
         {
             {
                 for (int i = 0; i < points.Count - 1; i++)
@@ -98,7 +150,7 @@ namespace WpfApp1
             }
 
         }
-    
+
         private void Draw(Point point, int size, Brush colour)
         {
             canvas.Children.Add(
@@ -111,34 +163,33 @@ namespace WpfApp1
             );
         }
 
-        private void Draw(Point start, Point end)
+        private void sliderChange(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            Line line = new Line
+            //alpha = (float)e.NewValue;
+            //if (coords.Count > 1){SplineDrawing(Brushes.Orange);}
+            magnitude = e.NewValue;
+            coords.RemoveAt(0);
+            coords.Insert(0, first);
+
+
+            var line = new Line
             {
-                X1 = start.X,
-                Y1 = start.Y,
-                X2 = end.X,
-                Y2 = end.Y,
-                Stroke = Brushes.LightGray,
-                StrokeThickness = 2
+                X1 = coords[0].X,
+                X2 = coords[1].X,
+                Y1 = coords[0].Y,
+                Y2 = coords[1].Y,
+                StrokeThickness = 2,
+                Stroke = Brushes.Bisque,
             };
+            clearCanvas();
             canvas.Children.Add(line);
-        }
+            var p = new Point(line.X1 + magnitude * (line.X2 - line.X1), line.Y1 + magnitude * (line.Y2 - line.Y1));
+            Draw(first, 6, Brushes.LightGray);
+            Draw(p, 6, Brushes.LightGreen);
+            coords.RemoveAt(0);
+            coords.Insert(0, p);
+            SplineDrawing(Brushes.Orange);
 
-        public void DrawCone(Point p1, Point p2, double angleDegrees)
-        {
-            Vector direction = p2 - p1;
-
-            double angleRadians = angleDegrees * Math.PI / 180;
-
-            Vector leftEdge = cr.RotateVector(direction, -angleRadians, 10);
-            Vector rightEdge = cr.RotateVector(direction, angleRadians, 10);
-
-            Point leftPoint = p2 + leftEdge;
-            Point rightPoint = p2 + rightEdge;
-
-            Draw(p2, leftPoint);
-            Draw(p2, rightPoint);
         }
 
     }
