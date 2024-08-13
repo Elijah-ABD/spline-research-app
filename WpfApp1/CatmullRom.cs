@@ -1,10 +1,34 @@
 using System.Windows;
-using System.Windows.Converters;
 using MathNet.Numerics;
 
 namespace WpfApp1
 {
-    public class CatmullRom{ 
+    public class CatmullRom{
+        public double DotProduct(Vector first, Vector other) => first.X * other.X + first.Y * other.Y;
+        public double ToRadians(double angle) => (Math.PI / 180) * angle;
+
+        public bool IsPointInCone(Point p1, Point p2, double angleDegrees, Point testPoint)
+        {
+            Vector direction = p2 - p1;
+            Vector toTestPoint = testPoint - p2;
+
+            double angleRadians = ToRadians(angleDegrees);
+            double dotProduct = DotProduct(direction, toTestPoint);
+            double angleToTestPoint = Math.Acos(dotProduct / (direction.Length * toTestPoint.Length));
+
+            return angleToTestPoint <= angleRadians;
+        }
+
+        public Vector RotateVector(Vector v, double angle)
+        {
+            double cosTheta = Math.Cos(angle);
+            double sinTheta = Math.Sin(angle);
+            return new Vector(
+                (v.X * cosTheta - v.Y * sinTheta),
+                (v.X * sinTheta + v.Y * cosTheta)
+            );
+        }
+
         public List<Point> CRChain(List<Point> points, float alpha)
         {
             var chainedCoords = new List<Point>();
@@ -13,18 +37,6 @@ namespace WpfApp1
                 chainedCoords.AddRange(CRPoint(points[i], points[i + 1], points[i + 2], points[i + 3], alpha));
             }
             return chainedCoords;
-        }
-
-
-
-        public Vector RotateVector(Vector v, double angle, double magnitude)
-        {
-            double cosTheta = Math.Cos(angle);
-            double sinTheta = Math.Sin(angle);
-            return new Vector(
-                magnitude * (v.X * cosTheta - v.Y * sinTheta),
-                magnitude * (v.X * sinTheta + v.Y * cosTheta)
-            );
         }
 
         private double Distance(double ti, Point pi, Point pj, float alpha)
