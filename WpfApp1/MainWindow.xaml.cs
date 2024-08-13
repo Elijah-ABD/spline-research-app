@@ -32,21 +32,33 @@ namespace WpfApp1
             if (coords.Count > 1) {SplineDrawing(Brushes.Orange);}
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+
+        private void ClearButtonClick(object sender, RoutedEventArgs e) { clearCanvas(); coords.Clear(); }
+        private void MapButtonClick(object sender, RoutedEventArgs e) => image.Visibility = image.Visibility
+                                                                      == Visibility.Visible 
+                                                                      ? Visibility.Hidden : Visibility.Visible;
+
+        private void UndoButtonClick(object sender, RoutedEventArgs e)
         {
-            switch (((Button)sender).Content)
+            switch (coords.Count)
             {
-                case "Clear":
+                case > 2:
+                    coords.RemoveAt(coords.Count - 1);
+                    SplineDrawing(Brushes.Orange);
+                    break;
+
+                case 2:
+                    coords.RemoveAt(coords.Count - 1);
+                    clearCanvas();
+                    Draw(coords[0], 6, Brushes.LightGray);
+                    break;
+
+                default:
                     clearCanvas();
                     coords.Clear();
                     break;
-
-                case "Toggle Map":
-                    image.Visibility = image.Visibility == Visibility.Visible ? Visibility.Hidden : Visibility.Visible;
-                    break;
             }
         }
-
         // Helper Functions
         private void Mirror(int index, Point p1, Point p2) => coords.Insert(index, new Point(2 * p1.X - p2.X, 2 * p1.Y - p2.Y));
         private void clearCanvas() => canvas.Children.Clear();

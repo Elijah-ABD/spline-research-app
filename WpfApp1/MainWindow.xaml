@@ -16,8 +16,9 @@
         <Image Name="image" Grid.Row="1" Source="image.png" Stretch="Fill" Visibility="Hidden"/>
 
         <StackPanel Orientation="Horizontal" Grid.Row="0">
-            <Button Name="MapButton" Click="Button_Click" Width="75" Content="Toggle Map"/>
-            <Button Name="ClearButton" Click="Button_Click" Width="50" Content="Clear"/>
+            <Button Name="MapButton" Click="MapButtonClick" Width="75" Content="Toggle Map"/>
+            <Button Name="ClearButton" Click="ClearButtonClick" Width="50" Content="Clear"/>
+            <Button Name="UndoButton" Click="UndoButtonClick" Width="50" Content="Undo"/>
             <TextBox Name="AlphaText" Text="{Binding ElementName=slValue, Path=Value, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" Width="40" />
             <Slider Width="100" Maximum="1" Value="0.5" TickPlacement="BottomRight" TickFrequency="0.1" IsSnapToTickEnabled="True" Name="slValue" ValueChanged="sliderChange" />
         </StackPanel>
