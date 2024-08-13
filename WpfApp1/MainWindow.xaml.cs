@@ -163,7 +163,7 @@ namespace WpfApp1
             );
         }
 
-        private void sliderChange(object sender, RoutedPropertyChangedEventArgs<double> e)
+        private void magSliderChange(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             //alpha = (float)e.NewValue;
             //if (coords.Count > 1){SplineDrawing(Brushes.Orange);}
@@ -192,5 +192,25 @@ namespace WpfApp1
 
         }
 
+        private void alphaSliderChange(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            alpha = (float)e.NewValue;
+            clearCanvas();
+            if (coords.Count > 1)
+            {
+                SplineDrawing(Brushes.Orange);
+                var line = new Line
+                {
+                    X1 = first.X,
+                    X2 = coords[1].X,
+                    Y1 = first.Y,
+                    Y2 = coords[1].Y,
+                    StrokeThickness = 2,
+                    Stroke = Brushes.Bisque,
+                };
+                Draw(first, 6, Brushes.LightGray);
+                canvas.Children.Add(line);
+            }
+        }
     }
 }

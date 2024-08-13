@@ -20,10 +20,10 @@
             <Button Name="ClearButton" Click="Button_Click" Width="50" Content="Clear"/>
             
             <TextBox Name="AlphaText" Text="{Binding ElementName=alphaValue, Path=Value, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" Width="40" />
-            <Slider Width="100" Maximum="1" TickPlacement="BottomRight" TickFrequency="0.1" IsSnapToTickEnabled="True" Name="alphaValue" ValueChanged="sliderChange" />
+            <Slider Width="100" Minimum="-1" Maximum="1" TickPlacement="BottomRight" TickFrequency="0.1" IsSnapToTickEnabled="True" Name="alphaValue" ValueChanged="alphaSliderChange" />
             
             <TextBox Name="MagText" Text="{Binding ElementName=magValue, Path=Value, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" Width="40" />
-            <Slider Width="100" Minimum="-5" Maximum="1" TickPlacement="BottomRight" TickFrequency="0.1" IsSnapToTickEnabled="True" Name="magValue" ValueChanged="sliderChange" />
+            <Slider Width="100" Minimum="-5" Maximum=".9999" TickPlacement="BottomRight" TickFrequency="0.1" IsSnapToTickEnabled="True" Name="magValue" ValueChanged="magSliderChange" />
         </StackPanel>
         <Canvas x:Name="canvas"/>
     </Grid>
