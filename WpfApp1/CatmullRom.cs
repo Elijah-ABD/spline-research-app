@@ -1,17 +1,23 @@
 using System.Windows;
-using System.Windows.Converters;
 using MathNet.Numerics;
 
 namespace WpfApp1
 {
     public class CatmullRom{
-        public double DotProduct(Vector first, Vector other)
-        {
-            return first.X * other.X + first.Y * other.Y;
-        }
-
+        public double DotProduct(Vector first, Vector other) => first.X * other.X + first.Y * other.Y;
         public double ToRadians(double angle) => (Math.PI / 180) * angle;
-     
+
+        public bool IsPointInCone(Point p1, Point p2, double angleDegrees, Point testPoint)
+        {
+            Vector direction = p2 - p1;
+            Vector toTestPoint = testPoint - p2;
+
+            double angleRadians = ToRadians(angleDegrees);
+            double dotProduct = DotProduct(direction, toTestPoint);
+            double angleToTestPoint = Math.Acos(dotProduct / (direction.Length * toTestPoint.Length));
+
+            return angleToTestPoint <= angleRadians;
+        }
 
         public Vector RotateVector(Vector v, double angle)
         {

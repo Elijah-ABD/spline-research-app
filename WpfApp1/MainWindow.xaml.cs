@@ -3,7 +3,6 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
-using MathNet.Numerics;
 
 namespace WpfApp1
 {
@@ -13,29 +12,24 @@ namespace WpfApp1
         private CatmullRom cr = new CatmullRom();
         private float alpha = 0.5f;
         
-        public MainWindow()
-        {
-            InitializeComponent();
-        }
+        public MainWindow() => InitializeComponent();
 
         // Event Handlers
 
         private void MouseClick(object sender, MouseEventArgs e)
         {
             var point = e.GetPosition(this);
-            if (coords.Count > 1 && !IsPointInCone(coords[^2], coords[^1], 45, point)) return;
+            if (coords.Count > 1 && !cr.IsPointInCone(coords[^2], 
+                coords[^1], 45, point)) return;
             coords.Add(point);
             Draw(point, 6, Brushes.LightGray);
                   
-            if (coords.Count > 1)
-            {
-                SplineDrawing(Brushes.Orange);
-            }
+            if (coords.Count > 1){SplineDrawing(Brushes.Orange);}
         }
         private void sliderChange(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             alpha = (float)e.NewValue;
-            if (coords.Count > 1) { SplineDrawing(Brushes.Orange);}
+            if (coords.Count > 1) {SplineDrawing(Brushes.Orange);}
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -71,19 +65,15 @@ namespace WpfApp1
 
             clearCanvas();
             Draw(coords, 2, Brushes.LightGray);
-            foreach (var point in coords)
-            {
-                Draw(point, 6, Brushes.LightGray);
-            }
-        Draw(splinePoints, 5, colour);
-        DrawCone(coords[^2], coords[^1], 45, 2000); // Arbitrary Values
+            foreach (var point in coords){Draw(point, 6, Brushes.LightGray);}
+            
+            Draw(splinePoints, 5, colour);
+            DrawCone(coords[^2], coords[^1], 45, 2000); // Arbitrary Values
 
         }
 
         private void Draw(List<Point> points, int size, Brush colour)
-        
         {
-            {
                 for (int i = 0; i < points.Count - 1; i++)
                 {
                     Line line = new Line
@@ -97,8 +87,6 @@ namespace WpfApp1
                     };
                     canvas.Children.Add(line);
                 }
-            }
-
         }
     
         private void Draw(Point point, int size, Brush colour)
@@ -142,19 +130,6 @@ namespace WpfApp1
 
             Draw(p2, leftPoint);
             Draw(p2, rightPoint);
-        }
-
-
-        public bool IsPointInCone(Point p1, Point p2, double angleDegrees, Point testPoint)
-        {
-            Vector direction = p2 - p1;
-            Vector toTestPoint = testPoint - p2;
-
-            double angleRadians = cr.ToRadians(angleDegrees);
-            double dotProduct = cr.DotProduct(direction, toTestPoint);
-            double angleToTestPoint = Math.Acos(dotProduct / (direction.Length* toTestPoint.Length));
-
-            return angleToTestPoint <= angleRadians;
         }
     }
 }
