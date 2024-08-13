@@ -19,9 +19,11 @@ namespace WpfApp1
         }
 
         // Event Handlers
+
         private void MouseClick(object sender, MouseEventArgs e)
         {
             var point = e.GetPosition(this);
+            if (coords.Count > 1 && !IsPointInCone(coords[^2], coords[^1], 45, point)) return;
             coords.Add(point);
             Draw(point, 6, Brushes.LightGray);
                   
@@ -74,7 +76,7 @@ namespace WpfApp1
                 Draw(point, 6, Brushes.LightGray);
             }
         Draw(splinePoints, 5, colour);
-        DrawCone(coords[coords.Count - 2], coords[coords.Count - 1], 45);
+        DrawCone(coords[^2], coords[^1], 45, 2000); // Arbitrary Values
 
         }
 
@@ -125,14 +127,15 @@ namespace WpfApp1
             canvas.Children.Add(line);
         }
 
-        public void DrawCone(Point p1, Point p2, double angleDegrees)
+        public void DrawCone(Point p1, Point p2, double angleDegrees, double coneLength)
         {
             Vector direction = p2 - p1;
+            direction.Normalize();
+            double angleRadians = cr.ToRadians(angleDegrees);
 
-            double angleRadians = angleDegrees * Math.PI / 180;
-
-            Vector leftEdge = cr.RotateVector(direction, -angleRadians, 10);
-            Vector rightEdge = cr.RotateVector(direction, angleRadians, 10);
+            Vector scaledDirection = direction * coneLength;
+            Vector leftEdge = cr.RotateVector(scaledDirection, -angleRadians);
+            Vector rightEdge = cr.RotateVector(scaledDirection, angleRadians);
 
             Point leftPoint = p2 + leftEdge;
             Point rightPoint = p2 + rightEdge;
@@ -141,5 +144,17 @@ namespace WpfApp1
             Draw(p2, rightPoint);
         }
 
+
+        public bool IsPointInCone(Point p1, Point p2, double angleDegrees, Point testPoint)
+        {
+            Vector direction = p2 - p1;
+            Vector toTestPoint = testPoint - p2;
+
+            double angleRadians = cr.ToRadians(angleDegrees);
+            double dotProduct = cr.DotProduct(direction, toTestPoint);
+            double angleToTestPoint = Math.Acos(dotProduct / (direction.Length* toTestPoint.Length));
+
+            return angleToTestPoint <= angleRadians;
+        }
     }
 }
