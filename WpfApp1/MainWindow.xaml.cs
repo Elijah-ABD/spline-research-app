@@ -3,28 +3,36 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
-
 namespace WpfApp1
 {
     public partial class MainWindow : System.Windows.Window
     {
         private List<Point> coords = new List<Point>();
+        private List<Path> paths = new List<Path>();
         private CatmullRom cr = new CatmullRom();
         private float alpha = 0.5f;
-        
-        public MainWindow() => InitializeComponent();
+        private bool draw = true;
+
+        private UIElement selectedElement;
+        private Point mouseOffset;
+
+        public MainWindow() { InitializeComponent();}
 
         // Event Handlers
+        public Dictionary<Path, Point> GetDict() => paths.Zip(coords, (k, v) => new { k, v }).ToDictionary(x => x.k, x => x.v);
 
         private void MouseClick(object sender, MouseEventArgs e)
         {
-            var point = e.GetPosition(this);
-            if (coords.Count > 1 && !cr.IsPointInCone(coords[^2], 
-                coords[^1], 45, point)) return;
-            coords.Add(point);
-            Draw(point, 6, Brushes.LightGray);
-                  
-            if (coords.Count > 1){SplineDrawing(Brushes.Orange);}
+            if (draw)
+            {
+                var point = e.GetPosition(this);
+                var path = new Path() { Fill = Brushes.LightBlue, Data = new EllipseGeometry(new Point(point.X, point.Y), 10, 10) };
+                coords.Add(point);
+                paths.Add(path);
+                canvas.Children.Add(path);
+                //Draw(point, el);
+                if (coords.Count > 1) { SplineDrawing(Brushes.Orange); }
+            }
         }
         private void sliderChange(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
@@ -33,11 +41,18 @@ namespace WpfApp1
         }
 
 
-        private void ClearButtonClick(object sender, RoutedEventArgs e) { clearCanvas(); coords.Clear(); }
+        private void ClearButtonClick(object sender, RoutedEventArgs e) { clearCanvas(); coords.Clear(); paths.Clear(); }
+        private void DrawButtonClick(object sender, RoutedEventArgs e) 
+        { 
+            draw = !draw;
+            foreach (var path in paths)
+            {
+                EnableDrag(path);
+            }
+        }
         private void MapButtonClick(object sender, RoutedEventArgs e) => image.Visibility = image.Visibility
                                                                       == Visibility.Visible 
                                                                       ? Visibility.Hidden : Visibility.Visible;
-
         private void UndoButtonClick(object sender, RoutedEventArgs e)
         {
             switch (coords.Count)
@@ -50,12 +65,13 @@ namespace WpfApp1
                 case 2:
                     coords.RemoveAt(coords.Count - 1);
                     clearCanvas();
-                    Draw(coords[0], 6, Brushes.LightGray);
+                    Draw(coords[0], 15, Brushes.LightGray);
                     break;
 
                 default:
                     clearCanvas();
                     coords.Clear();
+                    paths.Clear();
                     break;
             }
         }
@@ -76,11 +92,11 @@ namespace WpfApp1
             coords.RemoveAt(coords.Count - 1);
 
             clearCanvas();
+
             Draw(coords, 2, Brushes.LightGray);
-            foreach (var point in coords){Draw(point, 6, Brushes.LightGray);}
-            
             Draw(splinePoints, 5, colour);
-            DrawCone(coords[^2], coords[^1], 45, 2000); // Arbitrary Values
+            //foreach (var point in coords) { Draw(point, Brushes.LightGray); }
+            foreach (var path in paths) { canvas.Children.Add(path); }
 
         }
 
@@ -103,14 +119,25 @@ namespace WpfApp1
     
         private void Draw(Point point, int size, Brush colour)
         {
-            canvas.Children.Add(
-                new Path()
-                {
-                    Stroke = colour,
-                    StrokeThickness = 1,
-                    Data = new EllipseGeometry(new Point(point.X, point.Y), size, size)
-                }
-            );
+            var el = new Ellipse
+            {
+                Width = size,
+                Height = size,
+                Fill = colour
+            };
+            Canvas.SetLeft(el, point.X-size/2);
+            Canvas.SetTop(el, point.Y-size/2);
+            canvas.Children.Add(el);
+        }
+        private void Draw(Point point, Brush colour)
+        {
+            Path path = new Path
+            {
+                Fill = colour,
+                StrokeThickness = 1,
+                Data = new EllipseGeometry(new Point(point.X, point.Y), 6, 6)
+            };
+            canvas.Children.Add(path);
         }
 
         private void Draw(Point start, Point end)
@@ -142,6 +169,62 @@ namespace WpfApp1
 
             Draw(p2, leftPoint);
             Draw(p2, rightPoint);
+        }
+
+
+
+        private Nullable<Point> dragStart = null;
+
+        private void Down(object sender, MouseEventArgs e) 
+        { 
+            var element = (UIElement)sender;
+            dragStart = e.GetPosition(element);
+            element.CaptureMouse();
+        }
+        private void Up(object sender, MouseEventArgs e) 
+        { 
+            var element = (UIElement)sender;
+            dragStart = null;
+            element.ReleaseMouseCapture();
+        }
+
+        private void Move(object sender, MouseEventArgs e) 
+        { 
+            if (dragStart != null && e.LeftButton == MouseButtonState.Pressed)
+            {
+                var element = (UIElement)sender;
+                var p2 = e.GetPosition(this);
+                Canvas.SetLeft(element, p2.X - dragStart.Value.X);
+                Canvas.SetTop(element, p2.Y - dragStart.Value.Y);
+
+                coords[paths.IndexOf((Path)element)] = p2;
+                if (coords.Count > 1) SplineDrawing(Brushes.Orange);
+                    
+            }
+        }
+
+        private void EnableDrag(UIElement element) { 
+                element.MouseDown += Down;
+                element.MouseMove += Move;
+                element.MouseUp += Up;
+            }
+
+        private void Mouse() 
+        {
+
+            var shapes = new UIElement[]
+            {
+                new Ellipse() { Fill = Brushes.DarkKhaki, Width = 100, Height = 100 },
+                new Rectangle() { Fill = Brushes.LawnGreen, Width = 200, Height = 100 },
+                new Path() { Fill = Brushes.LightBlue, Data = new EllipseGeometry(new Point(200,344),6,6)},
+            };
+
+
+        foreach (var shape in shapes) 
+            {
+                EnableDrag(shape);
+                canvas.Children.Add(shape);
+            }
         }
     }
 }
