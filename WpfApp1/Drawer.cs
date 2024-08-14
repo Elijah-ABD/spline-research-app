@@ -27,7 +27,9 @@ namespace WpfApp1
         public void clearCanvas() => canvas.Children.Clear();
         public void SplineDrawing(Brush colour, float alpha, bool draw)
         {
-            Mirror(0, coords[0], coords[1]);
+            clearCanvas();
+            if (!newgen)
+            {
             Mirror(coords.Count, coords[^1], coords[^2]);
             var splinePoints = cr.CRChain(coords, alpha);
 
@@ -35,12 +37,38 @@ namespace WpfApp1
             // Remove mirrored control points
             coords.RemoveAt(0);
             coords.RemoveAt(coords.Count - 1);
+                Draw(coords, 2, Brushes.LightGray);
+                Draw(splinePoints, 5, colour);
+                foreach (var path in paths) { canvas.Children.Add(path); }
+                var polyline = new Polyline
+                {
+                    Stroke = Brushes.Orange,
+                    StrokeThickness = 5
+                };
+            }
+            else
+            {
+                var splinePoints = cr.CRBrain(coords, alpha);
 
             clearCanvas();
 
             Draw(coords, 2, Brushes.LightGray);
             Draw(splinePoints, 5, colour);
             foreach (var path in paths) { canvas.Children.Add(path); }
+                var polyline = new Polyline
+                {
+                    Stroke = Brushes.Orange,
+                    StrokeThickness = 5
+                };
+
+
+                // Add the points to the Polyline
+                foreach (var point in splinePoints)
+                {
+                    polyline.Points.Add(point);
+                }
+            }
+
             if (draw) Draw(coords[^2], coords[^1], 45, 2000); // Arbitrary Values
 
         }

@@ -1,12 +1,12 @@
 using System.Windows;
 using MathNet.Numerics;
-
+using TinySpline;
 namespace WpfApp1
 {
     public class CatmullRom{
         public double DotProduct(Vector first, Vector other) => first.X * other.X + first.Y * other.Y;
         public double ToRadians(double angle) => (Math.PI / 180) * angle;
-
+       
         public bool IsPointInCone(Point p1, Point p2, double angleDegrees, Point testPoint)
         {
             Vector direction = p2 - p1;
@@ -80,6 +80,29 @@ namespace WpfApp1
                 points.Add(new Point(pointX, pointY));
             }
             return points;
+        }
+
+        public List<Point> CRBrain(List<Point> points, float alpha)
+        {
+            // Define control points (example)
+            List<double> ps = new List<double>();
+
+            foreach (var point in points)
+            {
+                ps.Add(point.X);
+                ps.Add(point.Y);
+            }
+            var spline = BSpline.InterpolateCatmullRom(ps, 2);
+
+            // Evaluate the spline at multiple points
+            var resultPoints = new List<Point>();
+            for (float u = 0.0f; u <= 1.0f; u += 1/(float)(100*(points.Count-1)))
+            {
+                var evaluated = spline.Eval(u).Result;
+                resultPoints.Add(new Point(evaluated[0], evaluated[1]));
+            }
+
+            return resultPoints;
         }
 
     }
