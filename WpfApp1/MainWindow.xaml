@@ -17,6 +17,7 @@
 
         <StackPanel Orientation="Horizontal" Grid.Row="0">
             <Button Name="MapButton" Click="MapButtonClick" Width="75" Content="Toggle Map"/>
+            <Button Name="DrawButton" Click="DrawButtonClick" Width="50" Content="Draw"/>
             <Button Name="ClearButton" Click="ClearButtonClick" Width="50" Content="Clear"/>
             <Button Name="UndoButton" Click="UndoButtonClick" Width="50" Content="Undo"/>
             <TextBox Name="AlphaText" Text="{Binding ElementName=slValue, Path=Value, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" Width="40" />
