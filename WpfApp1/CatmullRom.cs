@@ -82,9 +82,8 @@ namespace WpfApp1
             return points;
         }
 
-        public List<Point> CRBrain(List<Point> points, float alpha)
+        public List<Point> CRLerp(List<Point> points, float alpha)
         {
-            // Define control points (example)
             List<double> ps = new List<double>();
 
             foreach (var point in points)
@@ -92,7 +91,7 @@ namespace WpfApp1
                 ps.Add(point.X);
                 ps.Add(point.Y);
             }
-            var spline = BSpline.InterpolateCatmullRom(ps, 2);
+            var spline = BSpline.InterpolateCatmullRom(ps, 2, alpha);
 
             // Evaluate the spline at multiple points
             var resultPoints = new List<Point>();

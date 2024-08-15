@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Controls;
+﻿using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Windows;
@@ -12,10 +7,10 @@ namespace WpfApp1
 {
     public class Drawer
     {
-        private CatmullRom cr = new CatmullRom();
-        private Canvas canvas;
-        private List<Point> coords;
-        private List<Path> paths;
+        private readonly CatmullRom cr = new CatmullRom();
+        private readonly Canvas canvas;
+        private readonly List<Point> coords;
+        private readonly List<Path> paths;
 
         public Drawer(Canvas canvas, List<Point> coords, List<Path> paths)
         {
@@ -23,55 +18,22 @@ namespace WpfApp1
             this.coords = coords;
             this.paths = paths;
         }
-        private void Mirror(int index, Point p1, Point p2) => coords.Insert(index, new Point(2 * p1.X - p2.X, 2 * p1.Y - p2.Y));
         public void clearCanvas() => canvas.Children.Clear();
         public void SplineDrawing(Brush colour, float alpha, bool draw)
         {
-            clearCanvas();
-            if (!newgen)
-            {
-            Mirror(coords.Count, coords[^1], coords[^2]);
-            var splinePoints = cr.CRChain(coords, alpha);
-
-
-            // Remove mirrored control points
-            coords.RemoveAt(0);
-            coords.RemoveAt(coords.Count - 1);
-                Draw(coords, 2, Brushes.LightGray);
-                Draw(splinePoints, 5, colour);
-                foreach (var path in paths) { canvas.Children.Add(path); }
-                var polyline = new Polyline
-                {
-                    Stroke = Brushes.Orange,
-                    StrokeThickness = 5
-                };
-            }
-            else
-            {
-                var splinePoints = cr.CRBrain(coords, alpha);
-
+            
+            var splinePoints = cr.CRLerp(coords, alpha);
+            var polyline = new Polyline{Stroke = colour, StrokeThickness = 5};
             clearCanvas();
 
             Draw(coords, 2, Brushes.LightGray);
-            Draw(splinePoints, 5, colour);
+            foreach (var point in splinePoints) { polyline.Points.Add(point); }
+            canvas.Children.Add(polyline);
             foreach (var path in paths) { canvas.Children.Add(path); }
-                var polyline = new Polyline
-                {
-                    Stroke = Brushes.Orange,
-                    StrokeThickness = 5
-                };
-
-
-                // Add the points to the Polyline
-                foreach (var point in splinePoints)
-                {
-                    polyline.Points.Add(point);
-                }
-            }
-
+            
             if (draw) Draw(coords[^2], coords[^1], 45, 2000); // Arbitrary Values
-
         }
+
         public void Draw(List<Point> points, int size, Brush colour)
         {
             for (int i = 0; i < points.Count - 1; i++)
