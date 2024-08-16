@@ -103,6 +103,18 @@ namespace WpfApp1
 
             return resultPoints;
         }
+        
+        public bool IsSplineValid(List<Point> points, double angle)
+        {
+            for (int i = 2; i < points.Count; i++)
+            {
+                if (!IsPointInCone(points[i-2], points[i -1], angle, points[i]))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
 
     }
 }

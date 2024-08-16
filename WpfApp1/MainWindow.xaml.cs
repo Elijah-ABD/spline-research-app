@@ -5,7 +5,7 @@ using System.Windows.Media;
 using System.Windows.Shapes;
 namespace WpfApp1
 {
-    public partial class MainWindow : System.Windows.Window
+    public partial class MainWindow : Window
     {
         private List<Point> coords = new List<Point>();
         private List<Path> paths = new List<Path>();
@@ -111,8 +111,17 @@ namespace WpfApp1
                 Canvas.SetTop(element, p2.Y - dragStart.Value.Y);
 
                 coords[paths.IndexOf((Path)element)] = p2;
-                if (coords.Count > 1) dr.SplineDrawing(Brushes.Orange, alpha, draw);
-
+                if (coords.Count > 1)
+                {
+                    if (cr.IsSplineValid(coords, 45))
+                    {
+                        dr.SplineDrawing(Brushes.Orange, alpha, draw);
+                    }
+                    else
+                    {
+                        dr.SplineDrawing(Brushes.Red, alpha, draw);
+                    }
+                }
             }
         }
         
