@@ -20,8 +20,10 @@
             <Button Name="DrawButton" Click="DrawButtonClick" Width="50" Content="Draw"/>
             <Button Name="ClearButton" Click="ClearButtonClick" Width="50" Content="Clear"/>
             <Button Name="UndoButton" Click="UndoButtonClick" Width="50" Content="Undo"/>
-            <TextBox Name="AlphaText" Text="{Binding ElementName=slValue, Path=Value, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" Width="40" />
-            <Slider Width="100" Maximum="1" Value="0.5" TickPlacement="BottomRight" TickFrequency="0.1" IsSnapToTickEnabled="True" Name="slValue" ValueChanged="sliderChange" />
+            <TextBox Name="AlphaText" Text="{Binding ElementName=alphaValue, Path=Value, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" Width="40" />
+            <Slider Width="100" Maximum="1" Value="0.5" TickPlacement="BottomRight" TickFrequency="0.1" IsSnapToTickEnabled="True" Name="alphaValue" ValueChanged="sliderChange" />
+            <TextBox Name="SplineText" Text="{Binding ElementName=splineValue, Path=Value, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" Width="40" />
+            <Slider Width="30" Minimum="1" Maximum="3" Value="1" TickPlacement="BottomRight" TickFrequency="1" IsSnapToTickEnabled="True" Name="splineValue" ValueChanged="sliderChange" />
         </StackPanel>
         <Canvas x:Name="canvas"/>
     </Grid>

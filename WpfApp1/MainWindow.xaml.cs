@@ -13,6 +13,7 @@ namespace WpfApp1
         private Drawer dr;
         private float alpha = 0.5f;
         private bool draw = true;
+        private int splineType = 1;
         private Nullable<Point> dragStart = null;
 
         public MainWindow() {InitializeComponent(); dr = new Drawer(canvas, coords, paths);}
@@ -27,13 +28,22 @@ namespace WpfApp1
                 coords[^1], 45, point)) return;
                 coords.Add(point);
                 paths.Add(dr.Draw(point, 6, Brushes.LightGray));
-                if (coords.Count > 1) { dr.SplineDrawing(Brushes.Orange, alpha, draw); }
+                dr.SplineDrawing(Brushes.Orange, alpha, draw, splineType);
             }
         }
         private void sliderChange(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            alpha = (float)e.NewValue;
-            if (coords.Count > 1) {dr.SplineDrawing(Brushes.Orange, alpha, draw);}
+            switch (((Slider)sender).Name)
+            {
+                case "alphaValue":
+                    alpha = (float)e.NewValue;
+                    break;
+
+                case "splineValue":
+                    splineType = (int)e.NewValue;
+                    break;
+            }
+            if (coords.Count > 1) {dr.SplineDrawing(Brushes.Orange, alpha, draw, splineType);}
         }
 
 
@@ -70,7 +80,7 @@ namespace WpfApp1
                 case > 2:
                     coords.RemoveAt(coords.Count - 1);
                     paths.RemoveAt(paths.Count - 1);
-                    dr.SplineDrawing(Brushes.Orange, alpha, draw);
+                    dr.SplineDrawing(Brushes.Orange, alpha, draw, splineType);
                     break;
 
                 case 2:
@@ -113,14 +123,10 @@ namespace WpfApp1
                 coords[paths.IndexOf((Path)element)] = p2;
                 if (coords.Count > 1)
                 {
-                    if (cr.IsSplineValid(coords, 45))
-                    {
-                        dr.SplineDrawing(Brushes.Orange, alpha, draw);
-                    }
-                    else
-                    {
-                        dr.SplineDrawing(Brushes.Red, alpha, draw);
-                    }
+                    Brush colour;
+                    if (cr.IsSplineValid(coords, 45))colour = Brushes.Orange;
+                    else colour = Brushes.Red;
+                    dr.SplineDrawing(colour, alpha, draw, splineType);
                 }
             }
         }

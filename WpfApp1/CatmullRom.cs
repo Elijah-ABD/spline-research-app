@@ -82,16 +82,30 @@ namespace WpfApp1
             return points;
         }
 
-        public List<Point> CRLerp(List<Point> points, float alpha)
+        public List<Point> CRLerp(List<Point> points, float alpha, int splineType=1)
         {
             List<double> ps = new List<double>();
-
+            BSpline spline = new BSpline();
             foreach (var point in points)
             {
                 ps.Add(point.X);
                 ps.Add(point.Y);
             }
-            var spline = BSpline.InterpolateCatmullRom(ps, 2, alpha);
+            switch (splineType)
+            {
+                case 1:
+                    spline = BSpline.InterpolateCatmullRom(ps, 2, alpha);
+                    break;
+
+                case 2:
+                    spline = BSpline.InterpolateCubicNatural(ps, 2);
+                    break;
+
+                case 3:
+                    spline = new BSpline((uint)points.Count, 2, 3);
+                    spline.ControlPoints = ps;
+                    break;
+            }
 
             // Evaluate the spline at multiple points
             var resultPoints = new List<Point>();
