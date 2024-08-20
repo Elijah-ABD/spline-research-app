@@ -19,8 +19,9 @@ namespace WpfApp1
             this.paths = paths;
         }
         public void clearCanvas() => canvas.Children.Clear();
-        public void SplineDrawing(Brush colour, float alpha, bool draw, int splineType=1)
+        public void SplineDrawing(float alpha, bool draw, int splineType=1)
         {
+            Brush colour = cr.IsSplineValid(coords, 45) ? Brushes.Orange : Brushes.Red;
             if (splineType == 3 && coords.Count < 4) return; 
             var splinePoints = cr.CRLerp(coords, alpha, splineType);
             var polyline = new Polyline{Stroke = colour, StrokeThickness = 5};

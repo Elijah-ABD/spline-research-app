@@ -28,7 +28,7 @@ namespace WpfApp1
                 coords[^1], 45, point)) return;
                 coords.Add(point);
                 paths.Add(dr.Draw(point, 6, Brushes.LightGray));
-                dr.SplineDrawing(Brushes.Orange, alpha, draw, splineType);
+                dr.SplineDrawing(alpha, draw, splineType);
             }
         }
         private void sliderChange(object sender, RoutedPropertyChangedEventArgs<double> e)
@@ -43,7 +43,7 @@ namespace WpfApp1
                     splineType = (int)e.NewValue;
                     break;
             }
-            if (coords.Count > 1) {dr.SplineDrawing(Brushes.Orange, alpha, draw, splineType);}
+            if (coords.Count > 1) {dr.SplineDrawing(alpha, draw, splineType);}
         }
 
 
@@ -80,7 +80,7 @@ namespace WpfApp1
                 case > 2:
                     coords.RemoveAt(coords.Count - 1);
                     paths.RemoveAt(paths.Count - 1);
-                    dr.SplineDrawing(Brushes.Orange, alpha, draw, splineType);
+                    dr.SplineDrawing(alpha, draw, splineType);
                     break;
 
                 case 2:
@@ -123,10 +123,7 @@ namespace WpfApp1
                 coords[paths.IndexOf((Path)element)] = p2;
                 if (coords.Count > 1)
                 {
-                    Brush colour;
-                    if (cr.IsSplineValid(coords, 45))colour = Brushes.Orange;
-                    else colour = Brushes.Red;
-                    dr.SplineDrawing(colour, alpha, draw, splineType);
+                       dr.SplineDrawing(alpha, draw, splineType);
                 }
             }
         }
