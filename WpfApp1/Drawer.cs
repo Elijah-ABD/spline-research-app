@@ -32,7 +32,7 @@ namespace WpfApp1
             canvas.Children.Add(polyline);
             foreach (var path in paths) { canvas.Children.Add(path); }
             
-            if (draw && coords.Count > 1) Draw(coords[^2], coords[^1], 45, 2000); // Arbitrary Values
+            //if (draw && coords.Count > 1) Draw(coords[^2], coords[^1], 45, 2000); // Arbitrary Values
         }
 
         public void Draw(List<Point> points, int size, Brush colour)

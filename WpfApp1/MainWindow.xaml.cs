@@ -15,22 +15,37 @@ namespace WpfApp1
         private bool draw = true;
         private int splineType = 1;
         private Nullable<Point> dragStart = null;
+        private Point last = new Point(0, 0);
 
         public MainWindow() {InitializeComponent(); dr = new Drawer(canvas, coords, paths);}
 
         // Event Handlers
+
+        private void MouseMover(object sender, MouseEventArgs e)
+        {
+            if (draw && !e.GetPosition(this).Equals(last))
+            {
+                var point = e.GetPosition(this);
+                coords.Add(point);
+                paths.Add(dr.Draw(point, 6, Brushes.LightGray));
+                dr.SplineDrawing(alpha, draw, splineType);
+                coords.RemoveAt(coords.Count - 1);
+                paths.RemoveAt(paths.Count - 1);
+                last = point;
+            }
+        }
+
         private void MouseClick(object sender, MouseEventArgs e)
         {
             if (draw)
             {
                 var point = e.GetPosition(this);
-                if (coords.Count > 1 && !cr.IsPointInCone(coords[^2],
-                coords[^1], 45, point)) return;
                 coords.Add(point);
                 paths.Add(dr.Draw(point, 6, Brushes.LightGray));
                 dr.SplineDrawing(alpha, draw, splineType);
             }
         }
+
         private void sliderChange(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             switch (((Slider)sender).Name)
@@ -47,14 +62,19 @@ namespace WpfApp1
         }
 
 
-        private void ClearButtonClick(object sender, RoutedEventArgs e) { dr.clearCanvas(); coords.Clear(); paths.Clear(); }
+        private void ClearButtonClick(object sender, RoutedEventArgs e) 
+        { 
+            dr.clearCanvas(); 
+            coords.Clear(); 
+            paths.Clear(); 
+        }
 
         private void DrawButtonClick(object sender, RoutedEventArgs e) 
         { 
             draw = !draw;
             foreach (var path in paths)
             {
-                Drag(path, draw);
+                Drag(path);
             }
 
             if (!draw && canvas.Children.Count > 0 && canvas.Children[^1] is Line)
@@ -128,7 +148,7 @@ namespace WpfApp1
             }
         }
         
-        private void Drag(UIElement element, bool draw)
+        private void Drag(UIElement element)
         {
             if (draw)
             {
@@ -142,6 +162,13 @@ namespace WpfApp1
                 element.MouseLeftButtonUp += Up;
                 element.MouseMove += Move;
             }
+        }
+
+        private void Window_KeyDown(object sender, KeyEventArgs e)
+        {
+            draw = !draw;
+            foreach (var path in paths) Drag(path);
+            dr.SplineDrawing(alpha, draw, splineType);
         }
     }
 }
