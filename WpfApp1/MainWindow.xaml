@@ -6,7 +6,8 @@
         xmlns:local="clr-namespace:WpfApp1"
         mc:Ignorable="d"
         Name="window"
-        Title="WPF" Height="400" Width="700" MouseDown="MouseClick" Background="#0E1A25">
+        Title="Spline Drawing" Height="400" Width="700" MouseDown="MouseClick" Background="#0E1A25"
+        Icon="icon.png">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
